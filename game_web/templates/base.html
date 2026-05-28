@@ -12,7 +12,7 @@
 <body>
     {% block content %}{% endblock %}
     
-    <script src="http://localhost:3001/socket.io/socket.io.js"></script>
+    <script src="https://ccn-production.up.railway.app/socket.io/socket.io.js"></script>
     <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
     {% block extra_js %}{% endblock %}
 </body>

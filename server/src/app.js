@@ -13,7 +13,7 @@ const app = express();
 //////////////////////////////////////////////////
 app.use(
   cors({
-    origin: ["http://localhost:5000", "http://127.0.0.1:5000", "*"],
+    origin: ["http://localhost:5000", "http://127.0.0.1:5000", "https://ccn-frontend-production.up.railway.app", "*"],
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
   }),

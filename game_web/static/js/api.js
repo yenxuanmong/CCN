@@ -4,7 +4,7 @@
  * Load file này TRƯỚC mọi file JS khác.
  */
 
-const BACKEND_URL = 'http://localhost:3001';
+const BACKEND_URL = 'https://ccn-production.up.railway.app';
 
 // ─────────────────────────────────────────────
 // AUTH — lưu token + user vào localStorage
