@@ -1,4 +1,4 @@
-const { v4: uuidv4 } = require("uuid");
+const { randomUUID } = require("crypto");
 
 function generateRoomCode() {
   // 6 ký tự hex ngẫu nhiên → ~16 triệu khả năng, giảm đáng kể xác suất trùng
@@ -6,7 +6,7 @@ function generateRoomCode() {
 }
 
 function generateId() {
-  return uuidv4();
+  return randomUUID();
 }
 
 module.exports = {
