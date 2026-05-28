@@ -9,7 +9,7 @@ const prisma = require("../config/db");
 function initSocket(server) {
   const io = new Server(server, {
     cors: {
-      origin: ["http://localhost:5000", "http://127.0.0.1:5000", "https://ccn-frontend-production.up.railway.app", "*"],
+      origin: ["http://localhost:5000", "http://127.0.0.1:5000", "https://ccn-fe-production.up.railway.app"],
       methods: ["GET", "POST"],
     },
   });
