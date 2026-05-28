@@ -1,0 +1,442 @@
+﻿<!DOCTYPE html>
+
+<html lang="vi">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Ludo Master Elite - Lobby</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/static/css/main.css">
+
+  <link rel="stylesheet" href="/static/css/lobby.css">
+
+</head>
+
+<body>
+
+  <!-- Sidebar -->
+
+  <aside class="sidebar">
+
+    <div class="sidebar-logo">
+
+      <h1>LUDO MASTER ELITE</h1>
+
+    </div>
+
+    <div class="sidebar-user">
+
+      <div class="avatar avatar-sm" id="sidebarAvatar">P</div>
+
+      <div class="sidebar-user-info">
+
+        <h3 id="sidebarUsername">ProPlayer_99</h3>
+
+        <p>Grandmaster III</p>
+
+      </div>
+
+    </div>
+
+    <nav class="sidebar-nav">
+
+      <a class="nav-item active" href="/lobby">
+
+        <span class="nav-icon">🎮</span><span>Lobby</span>
+
+      </a>
+
+      <a class="nav-item" href="#" onclick="showFriends()">
+
+        <span class="nav-icon">👥</span><span>Bạn bè</span>
+
+        <span class="badge badge-red" id="friendBadge" style="margin-left:auto; display:none;">2</span>
+
+      </a>
+
+      <a class="nav-item" href="#">
+
+        <span class="nav-icon">🏆</span><span>Xếp hạng</span>
+
+      </a>
+
+      <a class="nav-item" href="/profile">
+
+        <span class="nav-icon">👤</span><span>Hồ sơ</span>
+
+      </a>
+
+      <a class="nav-item" href="#">
+
+        <span class="nav-icon">🛒</span><span>Cửa hàng</span>
+
+      </a>
+
+    </nav>
+
+    <div class="sidebar-bottom">
+
+      <a class="nav-item" href="#" onclick="showSettings()">
+
+        <span class="nav-icon">⚙️</span><span>Cài đặt</span>
+
+      </a>
+
+      <a class="nav-item" href="/" onclick="logout()">
+
+        <span class="nav-icon">🚪</span><span>Đăng xuất</span>
+
+      </a>
+
+    </div>
+
+  </aside>
+
+
+
+  <!-- Topbar -->
+
+  <header class="topbar">
+
+    <span class="topbar-logo">Ludo Master Elite</span>
+
+    <nav style="display:flex; gap:24px;">
+
+      <a href="/lobby" style="color:#6c8fff; font-size:14px; font-weight:600; text-decoration:none;">Sảnh chờ</a>
+
+      <a href="#" style="color:#8b8fa8; font-size:14px; text-decoration:none;">Giải đấu</a>
+
+      <a href="#" style="color:#8b8fa8; font-size:14px; text-decoration:none;">Xếp hạng</a>
+
+    </nav>
+
+    <div class="topbar-actions">
+
+      <div class="topbar-coins">
+
+        <span class="coin-icon">🪙</span>
+
+        <span id="topbarCoins">12,450</span>
+
+      </div>
+
+      <button style="background:none; border:none; color:#8b8fa8; font-size:20px; cursor:pointer;">🔔</button>
+
+      <button style="background:none; border:none; color:#8b8fa8; font-size:20px; cursor:pointer;" onclick="window.location.href='/profile'">⚙️</button>
+
+      <div class="avatar avatar-sm" id="topbarAvatar" style="cursor:pointer;" onclick="window.location.href='/profile'">P</div>
+
+    </div>
+
+  </header>
+
+
+
+  <!-- Main Content -->
+
+  <main class="main-content">
+
+    <div class="lobby-grid">
+
+      <!-- Left: Room List -->
+
+      <div class="lobby-main">
+
+        <!-- Action Buttons -->
+
+        <div class="action-cards">
+
+          <div class="action-card action-create" onclick="showCreateRoom()">
+
+            <div class="action-icon">⭕</div>
+
+            <div>
+
+              <div class="action-label">TẠO PHÒNG</div>
+
+              <div class="action-title">Tạo Phòng</div>
+
+            </div>
+
+          </div>
+
+          <div class="action-card action-quick" onclick="quickMatch()">
+
+            <div class="action-icon">⚡</div>
+
+            <div>
+
+              <div class="action-label">TÌM TRẬN NHANH</div>
+
+              <div class="action-title">Chơi Ngay</div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+
+        <!-- Room List -->
+
+        <div class="section-header">
+
+          <div>
+
+            <div class="section-label">PHÒNG ĐANG CHỜ</div>
+
+            <h2 class="section-title">Danh sách phòng</h2>
+
+          </div>
+
+          <div style="display:flex; gap:8px;">
+
+            <button class="btn btn-secondary btn-sm" onclick="filterRooms()">🔽 Lọc</button>
+
+            <button class="btn btn-secondary btn-sm" onclick="loadRooms()">🔄 Làm mới</button>
+
+          </div>
+
+        </div>
+
+
+
+        <div id="roomList" class="room-list">
+
+          <!-- Rooms loaded dynamically -->
+
+        </div>
+
+      </div>
+
+
+
+      <!-- Right: Chat + Friends -->
+
+      <div class="lobby-sidebar">
+
+        <!-- Global Chat -->
+
+        <div class="chat-panel">
+
+          <div class="chat-header">
+
+            <div style="display:flex; align-items:center; gap:8px;">
+
+              <span>💬</span>
+
+              <span class="font-semibold">Chat công khai</span>
+
+            </div>
+
+            <span class="badge badge-green">2,491 Online</span>
+
+          </div>
+
+          <div class="chat-messages" id="chatMessages">
+
+            <!-- Messages loaded here -->
+
+          </div>
+
+          <div class="chat-input-row">
+
+            <input type="text" class="chat-input" id="chatInput" placeholder="Nhập tin nhắn..." onkeydown="if(event.key==='Enter') sendMessage()">
+
+            <button class="btn btn-primary btn-sm" onclick="sendMessage()">Gửi</button>
+
+          </div>
+
+        </div>
+
+
+
+        <!-- Friends Panel -->
+
+        <div class="friends-panel">
+
+          <div class="friends-tabs">
+
+            <button class="friend-tab active" onclick="switchFriendTab('friends')">BẠN BÈ</button>
+
+            <button class="friend-tab" onclick="switchFriendTab('requests')">
+
+              LỜI MỜI <span class="badge badge-red" id="reqCount">2</span>
+
+            </button>
+
+          </div>
+
+          <div id="friendsList" class="friends-list">
+
+            <!-- Friends loaded here -->
+
+          </div>
+
+          <div id="requestsList" class="friends-list" style="display:none;">
+
+            <!-- Requests loaded here -->
+
+          </div>
+
+          <div style="padding:12px; border-top:1px solid #2a2a40;">
+
+            <div style="display:flex; gap:8px;">
+
+              <input type="text" class="chat-input" id="addFriendInput" placeholder="Tìm bạn theo tên...">
+
+              <button class="btn btn-primary btn-sm" onclick="sendFriendRequest()">+</button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+
+
+  <!-- Create Room Modal -->
+
+  <div class="modal-overlay" id="createRoomModal">
+
+    <div class="modal">
+
+      <div class="modal-header">
+
+        <h3 class="modal-title">🏠 Tạo Phòng Mới</h3>
+
+        <button class="modal-close" onclick="closeModal('createRoomModal')">✕</button>
+
+      </div>
+
+      <div class="input-group">
+
+        <label class="input-label">Tên phòng</label>
+
+        <input type="text" class="input-field" id="roomName" placeholder="Phòng của tôi">
+
+      </div>
+
+      <div class="input-group">
+
+        <label class="input-label">Số người chơi tối đa</label>
+
+        <select class="input-field" id="maxPlayers">
+
+          <option value="2">2 người</option>
+
+          <option value="3">3 người</option>
+
+          <option value="4" selected>4 người</option>
+
+        </select>
+
+      </div>
+
+      <div class="input-group">
+
+        <label class="input-label">Chế độ phòng</label>
+
+        <select class="input-field" id="roomPrivacy">
+
+          <option value="public">Công khai</option>
+
+          <option value="private">Riêng tư</option>
+
+        </select>
+
+      </div>
+
+      <div style="display:flex; gap:12px; margin-top:8px;">
+
+        <button class="btn btn-secondary" style="flex:1;" onclick="closeModal('createRoomModal')">Hủy</button>
+
+        <button class="btn btn-primary" style="flex:1;" onclick="createRoom()">Tạo phòng</button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- Toast Container -->
+
+  <div id="toastContainer" class="toast-container"></div>
+
+
+
+  <!-- Private Chat Modal -->
+
+  <div class="modal-overlay" id="privateChatModal" data-friend-id="">
+
+    <div class="modal" style="max-width:420px;width:95%;padding:0;overflow:hidden;display:flex;flex-direction:column;height:520px;">
+
+      <!-- Header -->
+
+      <div style="padding:16px 20px;border-bottom:1px solid #2a2a40;display:flex;align-items:center;justify-content:space-between;background:#1a1a2e;">
+
+        <div style="font-size:15px;font-weight:700;" id="privateChatTitle">💬 Chat riêng</div>
+
+        <button class="modal-close" onclick="closeModal('privateChatModal');privateChatFriendId=null;">✕</button>
+
+      </div>
+
+      <!-- Messages -->
+
+      <div id="privateChatMessages" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:4px;background:#13131f;"></div>
+
+      <!-- Input -->
+
+      <div style="padding:12px 16px;border-top:1px solid #2a2a40;display:flex;gap:8px;background:#1a1a2e;">
+
+        <input type="text" id="privateInput" placeholder="Nhập tin nhắn..."
+
+          style="flex:1;background:#0d0d14;border:1px solid #2a2a40;border-radius:10px;padding:10px 14px;color:white;font-size:13px;font-family:Inter,sans-serif;"
+
+          onkeydown="if(event.key==='Enter')sendPrivateMessage()"
+
+          onfocus="this.style.borderColor='#4a6cf7'" onblur="this.style.borderColor='#2a2a40'">
+
+        <button onclick="sendPrivateMessage()"
+
+          style="width:40px;height:40px;background:linear-gradient(135deg,#4a6cf7,#6c8fff);border:none;border-radius:10px;color:white;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+
+          ➤
+
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.0/socket.io.min.js"></script>
+
+  <script src="/static/js/api.js"></script>
+
+  <script src="/static/js/utils.js"></script>
+
+  <script src="/static/js/lobby.js"></script>
+
+</body>
+
+</html>
+

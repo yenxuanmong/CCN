@@ -1,0 +1,68 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+venv/
+env/
+.venv/
+
+# Database (local only - auto-created on first run)
+game_web/ludo.db
+game_web/*.db
+game_web/*.db-journal
+game_web/*.db-shm
+game_web/*.db-wal
+server/prisma/*.db
+server/prisma/*.db-journal
+server/prisma/*.db-shm
+server/prisma/*.db-wal
+
+# Flutter / Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+build/
+*.g.dart
+*.freezed.dart
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment secrets
+.env
+.env.local
+.env.*.local
+server/.env
+
+# IDE
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+.metadata
+
+# Logs
+*.log
+logs/
+
+# Test / temp files
+game_web/test_*.py
+game_web/diagnose.py
+game_web/gen_game_html.py
+game_web/run_write.py
+game_web/write_game_html_content.txt

@@ -1,0 +1,313 @@
+/* ===== LOBBY STYLES ===== */
+.lobby-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 24px;
+  max-width: 1200px;
+}
+
+.action-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.action-card {
+  border-radius: 20px;
+  padding: 28px 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.action-card:hover { transform: translateY(-3px); }
+
+.action-create {
+  background: linear-gradient(135deg, #4a6cf7, #6c8fff);
+  box-shadow: 0 8px 25px rgba(74,108,247,0.4);
+}
+
+.action-quick {
+  background: linear-gradient(135deg, #dc2626, #ff4d6d);
+  box-shadow: 0 8px 25px rgba(220,38,38,0.4);
+}
+
+.action-icon { font-size: 36px; }
+
+.action-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  opacity: 0.8;
+  margin-bottom: 4px;
+}
+
+.action-title {
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.section-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.section-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: #8b8fa8;
+  margin-bottom: 4px;
+}
+
+.section-title {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.room-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.room-card {
+  background: #1a1a2e;
+  border: 1px solid #2a2a40;
+  border-radius: 16px;
+  padding: 16px 20px;
+  transition: all 0.2s ease;
+}
+
+.room-card:hover {
+  border-color: #4a6cf7;
+  box-shadow: 0 4px 20px rgba(74,108,247,0.15);
+}
+
+.room-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.room-name { font-size: 15px; font-weight: 600; }
+.room-bet { font-size: 12px; color: #8b8fa8; margin-top: 2px; }
+
+.room-players {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #8b8fa8;
+}
+
+.player-slots {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.player-slot {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid #2a2a40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #4a6cf7, #a855f7);
+}
+
+.player-slot.empty {
+  background: #13131f;
+  border-style: dashed;
+  color: #4a4a6a;
+  font-size: 18px;
+}
+
+.btn-join {
+  width: 100%;
+  padding: 10px;
+  background: #13131f;
+  border: 1px solid #2a2a40;
+  border-radius: 10px;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Inter', sans-serif;
+}
+
+.btn-join:hover {
+  background: #4a6cf7;
+  border-color: #4a6cf7;
+}
+
+/* ===== CHAT PANEL ===== */
+.chat-panel {
+  background: #1a1a2e;
+  border: 1px solid #2a2a40;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  height: 320px;
+  margin-bottom: 16px;
+}
+
+.chat-header {
+  padding: 14px 16px;
+  border-bottom: 1px solid #2a2a40;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.chat-message { font-size: 13px; }
+.chat-message .sender { font-weight: 600; color: #6c8fff; margin-bottom: 2px; }
+.chat-message .sender.me { color: #4ade80; }
+.chat-message .text { color: #d1d5db; line-height: 1.4; }
+.chat-message .bubble-me {
+  background: rgba(74,108,247,0.2);
+  padding: 6px 10px;
+  border-radius: 8px;
+  display: inline-block;
+}
+
+.chat-input-row {
+  padding: 10px 12px;
+  border-top: 1px solid #2a2a40;
+  display: flex;
+  gap: 8px;
+}
+
+.chat-input {
+  flex: 1;
+  background: #13131f;
+  border: 1px solid #2a2a40;
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: white;
+  font-size: 13px;
+  font-family: 'Inter', sans-serif;
+}
+
+.chat-input:focus { outline: none; border-color: #4a6cf7; }
+.chat-input::placeholder { color: #4a4a6a; }
+
+/* ===== FRIENDS PANEL ===== */
+.friends-panel {
+  background: #1a1a2e;
+  border: 1px solid #2a2a40;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.friends-tabs {
+  display: flex;
+  border-bottom: 1px solid #2a2a40;
+}
+
+.friend-tab {
+  flex: 1;
+  padding: 12px;
+  background: none;
+  border: none;
+  color: #8b8fa8;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Inter', sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.friend-tab.active {
+  color: white;
+  border-bottom: 2px solid #4a6cf7;
+}
+
+.friends-list {
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.friend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  transition: background 0.2s;
+  cursor: pointer;
+}
+
+.friend-item:hover { background: #13131f; }
+
+.friend-info { flex: 1; }
+.friend-name { font-size: 13px; font-weight: 600; }
+.friend-status { font-size: 11px; color: #8b8fa8; }
+.friend-status.online { color: #4ade80; }
+
+.friend-actions { display: flex; gap: 6px; }
+.friend-action-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: 1px solid #2a2a40;
+  background: #13131f;
+  color: white;
+  cursor: pointer;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.friend-action-btn:hover { background: #4a6cf7; border-color: #4a6cf7; }
+
+/* ===== PLAY NOW BUTTON ===== */
+.play-now-btn {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  width: 152px;
+  padding: 14px;
+  background: linear-gradient(135deg, #4a6cf7, #6c8fff);
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  box-shadow: 0 4px 20px rgba(74,108,247,0.5);
+  transition: all 0.2s;
+}
+
+.play-now-btn:hover { transform: translateY(-2px); }

@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ludo Master Elite – Đăng Nhập</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #080c18; --bg2: #111827; --bg3: #1a2235;
+      --card: #141c2e; --border: #1e2d45;
+      --accent: #6366f1; --accent2: #818cf8;
+      --text: #f1f5f9; --muted: #64748b; --muted2: #94a3b8;
+      --red: #ef4444; --green: #22c55e;
+    }
+    html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; overflow: hidden; }
+    #toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+    .toast { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; font-size: 13px; min-width: 240px; animation: slideIn .2s ease; }
+    .toast.error { border-left: 3px solid var(--red); }
+    .toast.success { border-left: 3px solid var(--green); }
+    @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+    .auth-wrap {
+      display: flex; height: 100vh;
+    }
+
+    /* LEFT */
+    .auth-left {
+      flex: 1;
+      background: radial-gradient(ellipse at 30% 50%, #0f1e3a 0%, #080c18 70%);
+      display: flex; flex-direction: column;
+      padding: 48px;
+      position: relative; overflow: hidden;
+    }
+    .auth-left::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(circle at 40% 60%, rgba(99,102,241,.15) 0%, transparent 60%);
+    }
+    .brand { font-size: 28px; font-weight: 800; color: var(--accent2); letter-spacing: .5px; position: relative; z-index: 1; }
+    .brand-sub { font-size: 14px; color: var(--muted2); margin-top: 8px; position: relative; z-index: 1; }
+    .hero-area { flex: 1; display: flex; align-items: center; justify-content: center; position: relative; z-index: 1; }
+    .hero-card {
+      width: 220px; height: 220px;
+      background: linear-gradient(135deg, #1e293b, #0f172a);
+      border-radius: 24px;
+      border: 1px solid rgba(99,102,241,.3);
+      box-shadow: 0 0 60px rgba(99,102,241,.25), 0 0 120px rgba(99,102,241,.1);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 80px;
+      transform: rotate(-8deg);
+      animation: float 3s ease-in-out infinite;
+    }
+    @keyframes float { 0%,100% { transform: rotate(-8deg) translateY(0); } 50% { transform: rotate(-8deg) translateY(-12px); } }
+    .online-count { font-size: 13px; color: var(--muted2); display: flex; align-items: center; gap: 8px; position: relative; z-index: 1; }
+    .online-dot { width: 8px; height: 8px; background: var(--green); border-radius: 50%; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .4; } }
+
+    /* RIGHT */
+    .auth-right {
+      width: 480px; min-width: 480px;
+      background: var(--bg2);
+      display: flex; align-items: center; justify-content: center;
+      padding: 48px;
+      border-left: 1px solid var(--border);
+    }
+    .auth-box { width: 100%; }
+
+    /* TABS */
+    .tab-row {
+      display: flex;
+      background: #0a0e1a;
+      border-radius: 12px;
+      padding: 4px;
+      margin-bottom: 28px;
+    }
+    .tab-btn {
+      flex: 1; padding: 10px;
+      background: none; border: none;
+      color: var(--muted2); font-size: 14px; font-weight: 600;
+      border-radius: 8px; transition: all .15s; cursor: pointer;
+    }
+    .tab-btn.active { background: var(--bg3); color: var(--text); }
+
+    .auth-title { font-size: 26px; font-weight: 800; margin-bottom: 6px; }
+    .auth-sub { font-size: 13px; color: var(--muted2); margin-bottom: 24px; }
+
+    .form-group { margin-bottom: 16px; }
+    .form-label { display: block; font-size: 11px; font-weight: 700; color: var(--muted2); text-transform: uppercase; letter-spacing: .8px; margin-bottom: 6px; }
+    .form-input {
+      width: 100%; background: #0a0e1a;
+      border: 1px solid var(--border); border-radius: 10px;
+      padding: 12px 14px; color: var(--text); font-size: 14px;
+      outline: none; transition: border-color .15s;
+    }
+    .form-input:focus { border-color: var(--accent); }
+    .form-input::placeholder { color: var(--muted); }
+
+    .remember-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; font-size: 13px; }
+    .remember-row label { display: flex; align-items: center; gap: 6px; color: var(--muted2); cursor: pointer; }
+    .forgot { color: var(--accent2); font-size: 13px; }
+
+    .submit-btn {
+      width: 100%; padding: 14px;
+      background: var(--accent); color: #fff;
+      border: none; border-radius: 12px;
+      font-size: 15px; font-weight: 700;
+      letter-spacing: .5px; cursor: pointer;
+      transition: background .15s;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .submit-btn:hover { background: var(--accent2); }
+    .submit-btn:disabled { opacity: .6; cursor: not-allowed; }
+
+    .divider { text-align: center; color: var(--muted); font-size: 12px; margin: 20px 0; position: relative; }
+    .divider::before, .divider::after { content: ''; position: absolute; top: 50%; width: 42%; height: 1px; background: var(--border); }
+    .divider::before { left: 0; } .divider::after { right: 0; }
+
+    .social-row { display: flex; gap: 10px; }
+    .social-btn {
+      flex: 1; padding: 11px;
+      border-radius: 10px; border: 1px solid var(--border);
+      background: #0a0e1a; color: var(--text);
+      font-size: 13px; font-weight: 600; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      transition: background .15s;
+    }
+    .social-btn:hover { background: var(--bg3); }
+    .social-btn.fb { background: #1877f2; border-color: #1877f2; }
+    .social-btn.fb:hover { background: #1565c0; }
+
+    .footer-text { text-align: center; font-size: 12px; color: var(--muted); margin-top: 20px; }
+    .footer-text a { color: var(--red); font-weight: 600; }
+
+    .page-footer { text-align: center; font-size: 11px; color: var(--muted); margin-top: 32px; }
+    .page-footer a { color: var(--muted2); margin: 0 8px; }
+  </style>
+</head>
+<body>
+<div id="toast-container"></div>
+
+<div class="auth-wrap">
+  <!-- LEFT -->
+  <div class="auth-left">
+    <div class="brand">Ludo Master Elite</div>
+    <div class="brand-sub">Chinh phục bàn cờ, khẳng định đẳng cấp cao thủ.</div>
+
+    <div class="hero-area">
+      <div class="hero-card">🐴</div>
+    </div>
+
+    <div class="online-count">
+      <div class="online-dot"></div>
+      <span>12,403+ người đang trực tuyến</span>
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="auth-right">
+    <div class="auth-box">
+      <div class="tab-row">
+        <button class="tab-btn active" id="tab-login" onclick="switchTab('login')">Đăng Nhập</button>
+        <button class="tab-btn" id="tab-register" onclick="switchTab('register')">Đăng Ký</button>
+      </div>
+
+      <div id="title-login">
+        <div class="auth-title">Chào mừng trở lại!</div>
+        <div class="auth-sub">Nhập thông tin tài khoản để bắt đầu.</div>
+      </div>
+      <div id="title-register" style="display:none">
+        <div class="auth-title">Tạo tài khoản</div>
+        <div class="auth-sub">Tham gia cộng đồng Ludo Master Elite.</div>
+      </div>
+
+      <form id="auth-form" onsubmit="submitForm(event)">
+        <div class="form-group">
+          <label class="form-label">Tên đăng nhập</label>
+          <input class="form-input" id="username" type="text" placeholder="username_99" required autocomplete="username" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mật khẩu</label>
+          <input class="form-input" id="password" type="password" placeholder="••••••••" required autocomplete="current-password" />
+        </div>
+
+        <div class="remember-row" id="remember-row">
+          <label><input type="checkbox" /> Ghi nhớ tôi</label>
+          <a class="forgot" href="#">Quên mật khẩu?</a>
+        </div>
+
+        <button class="submit-btn" type="submit" id="submit-btn">
+          <span id="btn-text">VÀO GAME NGAY 🚀</span>
+          <span id="btn-spinner" style="display:none" class="spinner" style="width:18px;height:18px;border-width:2px;border-color:#fff3;border-top-color:#fff"></span>
+        </button>
+      </form>
+
+      <div class="divider">HOẶC ĐĂNG NHẬP VỚI</div>
+      <div class="social-row">
+        <button class="social-btn" onclick="toast('Tính năng đang phát triển','info')">🔵 Google</button>
+        <button class="social-btn fb" onclick="toast('Tính năng đang phát triển','info')">📘 Facebook</button>
+      </div>
+
+      <div class="footer-text" id="footer-switch">
+        Chưa có tài khoản? <a href="#" onclick="switchTab('register')">Tạo tài khoản mới</a>
+      </div>
+
+      <div class="page-footer">
+        © 2024 Ludo Master Elite Studio &bull;
+        <a href="#">Chính sách bảo mật</a>
+        <a href="#">Điều khoản sử dụng</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let mode = 'login';
+
+function switchTab(t) {
+  mode = t;
+  document.getElementById('tab-login').classList.toggle('active', t === 'login');
+  document.getElementById('tab-register').classList.toggle('active', t === 'register');
+  document.getElementById('title-login').style.display = t === 'login' ? '' : 'none';
+  document.getElementById('title-register').style.display = t === 'register' ? '' : 'none';
+  document.getElementById('remember-row').style.display = t === 'login' ? '' : 'none';
+  document.getElementById('btn-text').textContent = t === 'login' ? 'VÀO GAME NGAY 🚀' : 'TẠO TÀI KHOẢN';
+  document.getElementById('footer-switch').innerHTML = t === 'login'
+    ? 'Chưa có tài khoản? <a href="#" onclick="switchTab(\'register\')">Tạo tài khoản mới</a>'
+    : 'Đã có tài khoản? <a href="#" onclick="switchTab(\'login\')">Đăng nhập ngay</a>';
+}
+
+async function submitForm(e) {
+  e.preventDefault();
+  const username = document.getElementById('username').value.trim();
+  const password = document.getElementById('password').value.trim();
+  if (!username || !password) return toast('Vui lòng nhập đầy đủ thông tin!', 'error');
+
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  document.getElementById('btn-text').style.display = 'none';
+  document.getElementById('btn-spinner').style.display = '';
+
+  try {
+    const url = mode === 'login' ? '/api/auth/login' : '/api/auth/register';
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Lỗi không xác định');
+
+    if (mode === 'login') {
+      toast('Đăng nhập thành công! 🎉', 'success');
+      setTimeout(() => window.location.href = '/lobby', 800);
+    } else {
+      toast('Tạo tài khoản thành công! Hãy đăng nhập.', 'success');
+      switchTab('login');
+    }
+  } catch (err) {
+    toast('❌ ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    document.getElementById('btn-text').style.display = '';
+    document.getElementById('btn-spinner').style.display = 'none';
+  }
+}
+
+function toast(msg, type = 'info') {
+  const c = document.getElementById('toast-container');
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.textContent = msg;
+  c.appendChild(el);
+  setTimeout(() => el.remove(), 3500);
+}
+</script>
+</body>
+</html>

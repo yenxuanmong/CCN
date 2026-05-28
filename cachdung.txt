@@ -1,0 +1,16 @@
+# Cach chay server
+cd c:\MunCompany\CoCaNgua
+.\start.ps1
+
+# Kiem tra du lieu trong DB
+cd c:\MunCompany\CoCaNgua\server
+node check_data.js
+
+# Reset database (XOA TAT CA du lieu - CHI dung khi can bat dau lai)
+# npx prisma migrate reset --force
+
+# Push schema moi len DB (khong xoa du lieu)
+npx prisma db push
+
+# Generate Prisma client sau khi sua schema
+npx prisma generate

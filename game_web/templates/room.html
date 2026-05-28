@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ludo Master Elite - Phòng Chờ</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/main.css">
+  <style>
+    .room-layout { display: grid; grid-template-columns: 1fr 320px; gap: 24px; max-width: 1100px; }
+    .room-main { display: flex; flex-direction: column; gap: 20px; }
+    .room-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .info-card { background: #1a1a2e; border: 1px solid #2a2a40; border-radius: 16px; padding: 20px; }
+    .info-label { font-size: 11px; font-weight: 600; letter-spacing: 1px; color: #8b8fa8; margin-bottom: 8px; text-transform: uppercase; }
+    .room-code { font-family: 'Orbitron', sans-serif; font-size: 32px; font-weight: 900; color: #6c8fff; letter-spacing: 2px; }
+    .copy-btn { background: none; border: none; color: #8b8fa8; font-size: 18px; cursor: pointer; margin-left: 8px; transition: color 0.2s; }
+    .copy-btn:hover { color: #6c8fff; }
+    .setting-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; font-size: 14px; }
+    .setting-label { color: #8b8fa8; }
+    .setting-value { font-weight: 600; }
+    .toggle { width: 44px; height: 24px; background: #4a6cf7; border-radius: 12px; position: relative; cursor: pointer; }
+    .toggle::after { content: ''; position: absolute; width: 18px; height: 18px; background: white; border-radius: 50%; top: 3px; right: 3px; transition: right 0.2s; }
+    .toggle.off { background: #2a2a40; }
+    .toggle.off::after { right: auto; left: 3px; }
+    .players-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .player-card { background: #1a1a2e; border: 1px solid #2a2a40; border-radius: 14px; padding: 16px; display: flex; align-items: center; gap: 12px; position: relative; transition: all 0.2s; }
+    .player-card.host { border-color: #4a6cf7; box-shadow: 0 0 15px rgba(74,108,247,0.2); }
+    .player-card.empty { border-style: dashed; cursor: pointer; justify-content: center; flex-direction: column; gap: 8px; min-height: 80px; }
+    .player-card.empty:hover { border-color: #4a6cf7; background: rgba(74,108,247,0.05); }
+    .player-card-info { flex: 1; }
+    .player-card-name { font-size: 15px; font-weight: 700; }
+    .player-card-level { font-size: 11px; color: #8b8fa8; }
+    .host-badge { position: absolute; top: -8px; right: 10px; background: #4a6cf7; color: white; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; letter-spacing: 0.5px; }
+    .ready-badge { font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 8px; }
+    .ready-badge.ready { background: rgba(74,222,128,0.2); color: #4ade80; }
+    .ready-badge.not-ready { background: rgba(239,68,68,0.2); color: #ff4d6d; }
+    .level-ring { width: 20px; height: 20px; background: #4a6cf7; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; position: absolute; bottom: -4px; right: -4px; }
+    .action-bar { display: flex; gap: 12px; margin-top: 8px; }
+    .chat-panel { background: #1a1a2e; border: 1px solid #2a2a40; border-radius: 16px; display: flex; flex-direction: column; height: 100%; min-height: 400px; }
+    .chat-header { padding: 16px; border-bottom: 1px solid #2a2a40; }
+    .chat-header h3 { font-size: 14px; font-weight: 700; }
+    .chat-header p { font-size: 12px; color: #8b8fa8; }
+    .chat-messages { flex: 1; overflow-y: auto; padding: 12px 16px; display: flex; flex-direction: column; gap: 10px; }
+    .chat-msg { font-size: 13px; }
+    .chat-msg .name { font-weight: 600; color: #6c8fff; margin-bottom: 2px; }
+    .chat-msg .name.system { color: #8b8fa8; font-style: italic; }
+    .chat-msg .text { color: #d1d5db; }
+    .chat-input-row { padding: 12px; border-top: 1px solid #2a2a40; display: flex; gap: 8px; }
+    .chat-input { flex: 1; background: #13131f; border: 1px solid #2a2a40; border-radius: 8px; padding: 8px 12px; color: white; font-size: 13px; font-family: 'Inter', sans-serif; }
+    .chat-input:focus { outline: none; border-color: #4a6cf7; }
+    .chat-input::placeholder { color: #4a4a6a; }
+    .send-btn { width: 36px; height: 36px; background: #4a6cf7; border: none; border-radius: 8px; color: white; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; }
+    .color-indicators { display: flex; gap: 8px; margin-top: 12px; }
+    .color-dot { width: 20px; height: 20px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); }
+    .invite-modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; }
+    .invite-modal-overlay.active { display: flex; }
+    .invite-modal { background: #13131f; border: 1px solid #2a2a40; border-radius: 20px; width: 380px; max-width: 95vw; max-height: 80vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.6); }
+    .invite-modal-header { padding: 18px 20px; border-bottom: 1px solid #2a2a40; display: flex; align-items: center; justify-content: space-between; }
+    .invite-friend-item { display: flex; align-items: center; gap: 12px; padding: 12px 20px; border-bottom: 1px solid #1a1a2e; transition: background 0.15s; }
+    .invite-friend-item:hover { background: #1a1a2e; }
+    .invite-btn { margin-left: auto; padding: 6px 14px; background: linear-gradient(135deg,#4a6cf7,#6c8fff); border: none; border-radius: 8px; color: white; font-size: 12px; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; white-space: nowrap; }
+    .invite-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .invite-btn.sent { background: #16a34a; }
+  </style>
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="sidebar-logo"><h1>LUDO MASTER ELITE</h1></div>
+    <div class="sidebar-user">
+      <div class="avatar avatar-sm" id="sidebarAvatar">P</div>
+      <div class="sidebar-user-info">
+        <h3 id="sidebarUsername">Người chơi</h3>
+        <p>Cấp độ 1</p>
+      </div>
+    </div>
+   <nav class="sidebar-nav">
+
+      <a class="nav-item active" href="/lobby">
+
+        <span class="nav-icon">🎮</span><span>Lobby</span>
+
+      </a>
+
+      <a class="nav-item" href="#" onclick="showFriends()">
+
+        <span class="nav-icon">👥</span><span>Bạn bè</span>
+
+        <span class="badge badge-red" id="friendBadge" style="margin-left:auto; display:none;">2</span>
+
+      </a>
+
+      <a class="nav-item" href="#">
+
+        <span class="nav-icon">🏆</span><span>Xếp hạng</span>
+
+      </a>
+
+      <a class="nav-item" href="/profile">
+
+        <span class="nav-icon">👤</span><span>Hồ sơ</span>
+
+      </a>
+
+      <a class="nav-item" href="#">
+
+        <span class="nav-icon">🛒</span><span>Cửa hàng</span>
+
+      </a>
+
+    </nav>
+    <div class="sidebar-bottom">
+      <button class="btn btn-primary btn-full" onclick="window.location.href='/lobby'" style="margin:8px;">Về sân chơi</button>
+    </div>
+  </aside>
+
+  <header class="topbar">
+    <div>
+      <div style="font-size:11px; color:#8b8fa8; letter-spacing:1px;">SÂN CHƠI NHIỀU NGƯỜI</div>
+      <div style="font-size:15px; font-weight:700;">Chi tiết phòng - Đang chờ người chơi</div>
+    </div>
+    <div class="topbar-actions">
+      <button style="background:none; border:none; color:#8b8fa8; font-size:20px; cursor:pointer;">❓</button>
+      <button style="background:none; border:none; color:#8b8fa8; font-size:20px; cursor:pointer;">⚙️</button>
+      <div class="avatar avatar-sm" id="topbarAvatar">P</div>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <div class="room-layout">
+      <div class="room-main">
+        <div class="room-info-grid">
+          <div class="info-card">
+            <div class="info-label">Mã phòng</div>
+            <div style="display:flex; align-items:center;">
+              <div class="room-code" id="roomCodeDisplay">#LUDO-0000</div>
+              <button class="copy-btn" onclick="copyCode()" title="Sao chép mã">📋</button>
+            </div>
+          </div>
+          <div class="info-card">
+            <div class="info-label">Cài đặt phòng</div>
+            <div class="setting-row">
+              <span class="setting-label">Chế độ</span>
+              <div class="toggle" id="privacyToggle" onclick="togglePrivacy()"></div>
+            </div>
+            <div class="setting-row">
+              <span class="setting-label">Số người tối đa</span>
+              <span class="setting-value" style="color:#6c8fff;">4 Người</span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size:14px; font-weight:600; margin-bottom:12px; color:#8b8fa8;">NGƯỜI CHƠI</div>
+          <div class="players-grid" id="playersGrid"></div>
+        </div>
+
+        <div class="info-card">
+          <div class="info-label">Màu quân cờ của bạn</div>
+          <div class="color-indicators" id="colorPicker">
+            <div class="color-dot" style="background:#4a6cf7; cursor:pointer;" onclick="selectColor('blue')" title="Xanh dương"></div>
+            <div class="color-dot" style="background:#ef4444; cursor:pointer;" onclick="selectColor('red')" title="Đỏ"></div>
+            <div class="color-dot" style="background:#22c55e; cursor:pointer;" onclick="selectColor('green')" title="Xanh lá"></div>
+            <div class="color-dot" style="background:#eab308; cursor:pointer;" onclick="selectColor('yellow')" title="Vàng"></div>
+          </div>
+          <div style="font-size:12px; color:#8b8fa8; margin-top:8px;" id="selectedColorText">Đã chọn: Xanh dương</div>
+        </div>
+
+        <div class="action-bar">
+          <button class="btn btn-secondary" style="flex:1;" onclick="inviteFriends()">🔗 MỜI BẠN BÈ</button>
+          <button class="btn btn-secondary" style="flex:1;" id="addBotBtn" onclick="addBot()">🤖 THÊM BOT</button>
+          <button class="btn btn-primary btn-lg" style="flex:2;" id="startBtn" onclick="startGame()">▶ BẮT ĐẦU</button>
+        </div>
+        <div style="text-align:center; margin-top:-8px;">
+          <button class="btn btn-secondary btn-sm" id="readyBtn" onclick="toggleReady()">✓ Sẵn sàng</button>
+          <button class="btn btn-danger btn-sm" style="margin-left:8px;" onclick="leaveRoom()">🚪 Rời phòng</button>
+        </div>
+      </div>
+
+      <div class="chat-panel">
+        <div class="chat-header">
+          <h3>CHAT PHÒNG <span class="badge badge-green" style="margin-left:8px;">Trực tuyến</span></h3>
+          <p style="margin-top:4px;">Nhắn tin với người trong phòng</p>
+        </div>
+        <div class="chat-messages" id="roomChatMessages"></div>
+        <div class="chat-input-row">
+          <input type="text" class="chat-input" id="roomChatInput" placeholder="Nhập tin nhắn..." onkeydown="if(event.key==='Enter') sendRoomMessage()">
+          <button class="send-btn" onclick="sendRoomMessage()">➤</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="toastContainer" class="toast-container"></div>
+
+  <div class="invite-modal-overlay" id="inviteModal">
+    <div class="invite-modal">
+      <div class="invite-modal-header">
+        <div>
+          <div style="font-size:15px;font-weight:700;">🔗 Mời bạn bè</div>
+          <div style="font-size:12px;color:#8b8fa8;margin-top:2px;">Chọn bạn để gửi lời mời vào phòng</div>
+        </div>
+        <button onclick="closeInviteModal()" style="background:none;border:none;color:#8b8fa8;font-size:20px;cursor:pointer;line-height:1;">✕</button>
+      </div>
+      <div style="padding:12px 20px;border-bottom:1px solid #2a2a40;display:flex;gap:8px;align-items:center;">
+        <div style="flex:1;background:#0d0d14;border:1px solid #2a2a40;border-radius:8px;padding:8px 12px;font-size:12px;color:#8b8fa8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" id="inviteCodeDisplay"></div>
+        <button onclick="copyInviteCode()" style="padding:8px 12px;background:#2a2a40;border:none;border-radius:8px;color:white;font-size:12px;cursor:pointer;white-space:nowrap;">📋 Sao chép</button>
+      </div>
+      <div id="inviteFriendsList" style="flex:1;overflow-y:auto;max-height:340px;">
+        <div style="padding:20px;text-align:center;color:#4a4a6a;font-size:13px;">Đang tải...</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="http://localhost:3001/socket.io/socket.io.js"></script>
+  <script src="/static/js/api.js"></script>
+  <script src="/static/js/utils.js"></script>
+  <script>
+    if (!Auth || !Auth.isLoggedIn()) window.location.href = '/';
+
+    let currentUser = Auth.getUser();
+    let roomId      = window.location.pathname.split('/').pop();
+    let isHost      = false;
+    let isReady     = false;
+    let selectedColor = 'blue';
+    let roomData    = null;
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      initUI();
+      SocketClient.connect();
+      bindRoomSocketEvents();
+      // Load data trước để hiển thị ngay, sau đó join socket room
+      await loadRoomData();
+      await loadRoomChatHistory();
+      SocketClient.joinRoom(roomId);
+    });
+
+    function initUI() {
+      const u = currentUser;
+      const name = u.displayName || u.username || 'Người chơi';
+      const initial = name.charAt(0).toUpperCase();
+      document.getElementById('sidebarAvatar').textContent  = initial;
+      document.getElementById('topbarAvatar').textContent   = initial;
+      document.getElementById('sidebarUsername').textContent = name;
+    }
+
+    function bindRoomSocketEvents() {
+      SocketClient.on('player_joined', (data) => {
+        const name = data.username || data.userId || 'Người chơi';
+        appendRoomMessage({ name: 'HỆ THỐNG', text: name + ' đã vào phòng', system: true });
+        // Cập nhật player_assigned cho chính mình (isHost, color)
+        if (data.userId === currentUser.id) {
+          if (data.isHost) { isHost = true; updateHostUI(); }
+          Auth.setPlayerId(data.playerId);
+        }
+        loadRoomData();
+      });
+
+      SocketClient.on('player_assigned', (data) => {
+        if (data.playerId) Auth.setPlayerId(data.playerId);
+        if (data.isHost) { isHost = true; updateHostUI(); }
+      });
+
+      SocketClient.on('player_left', (data) => {
+        appendRoomMessage({ name: 'HỆ THỐNG', text: 'Một người chơi đã rời phòng', system: true });
+        loadRoomData();
+      });
+
+      SocketClient.on('host_changed', (data) => {
+        if (data.newHostId === currentUser.id) {
+          isHost = true;
+          updateHostUI();
+          showToast('Bạn là chủ phòng mới!', 'success');
+        }
+        loadRoomData();
+      });
+
+      SocketClient.on('room_deleted', function(data) {
+        if (data.roomId === roomId) {
+          showToast('Phòng đã bị đóng!', 'info');
+          setTimeout(function() { window.location.href = '/lobby'; }, 1500);
+        }
+      });
+
+      SocketClient.on('room_not_found', function(data) {
+        console.warn('[Room] room_not_found:', data.roomId);
+        showToast('Phòng không tồn tại, đang về lobby...', 'error');
+        setTimeout(function() { window.location.href = '/lobby'; }, 1500);
+      });
+
+      SocketClient.on('error', function(data) {
+        console.error('[Room] socket error:', data);
+        showToast(data.message || 'Có lỗi xảy ra', 'error');
+      });
+
+      SocketClient.on('ready_changed', (data) => {
+        // Cập nhật trạng thái local nếu là chính mình
+        if (data.userId === currentUser.id) {
+          isReady = data.isReady;
+          updateReadyBtn();
+          showToast(isReady ? 'Bạn đã sẵn sàng!' : 'Đã hủy sẵn sàng', isReady ? 'success' : 'info');
+        }
+        // Cập nhật badge trên player card cho tất cả
+        loadRoomData();
+      });
+
+      SocketClient.on('receive_message', (msg) => {
+        if (msg.roomId && msg.roomId !== roomId) return;
+        if (msg.toId) return;
+        const name = msg.username || msg.userId || 'Ẩn danh';
+        appendRoomMessage({ name, text: msg.content, system: false });
+      });
+    }
+
+    async function loadRoomData() {
+      try {
+        roomData = await API.getRoom(roomId);
+        console.log('[Room] roomData:', JSON.stringify(roomData));
+        if (roomData) {
+          const codeEl = document.getElementById('roomCodeDisplay');
+          if (codeEl) codeEl.textContent = '#' + (roomData.code || roomId);
+          isHost = roomData.hostId === currentUser.id;
+          updateHostUI();
+          const players = (roomData.players || []).map(p => ({
+            userId:   p.userId,
+            username: p.user?.displayName || p.user?.username || (p.userId?.startsWith('BOT_') ? 'Bot' : 'Người chơi'),
+            level:    p.user?.level || 1,
+            isHost:   p.userId === roomData.hostId,
+            isReady:  p.isReady || false,
+            isBot:    p.userId?.startsWith('BOT_') || false,
+          }));
+          console.log('[Room] players mapped:', players);
+          renderPlayers(players);
+        } else {
+          showToast('Phòng không tồn tại!', 'error');
+          setTimeout(() => window.location.href = '/lobby', 1500);
+        }
+      } catch (err) {
+        console.warn('loadRoomData error:', err.message);
+      }
+    }
+
+    function updateHostUI() {
+      const startBtn  = document.getElementById('startBtn');
+      const addBotBtn = document.getElementById('addBotBtn');
+      if (!startBtn) return;
+      startBtn.style.display  = isHost ? '' : 'none';
+      startBtn.disabled       = !isHost;
+      startBtn.style.opacity  = isHost ? '1' : '0.5';
+      if (addBotBtn) {
+        addBotBtn.style.display = isHost ? '' : 'none';
+        // Ẩn nút thêm bot nếu phòng đã đủ 4 người
+        const playerCount = roomData?.players?.length || 0;
+        addBotBtn.disabled = playerCount >= 4;
+        addBotBtn.style.opacity = playerCount >= 4 ? '0.4' : '1';
+      }
+    }
+
+    function renderPlayers(players) {
+      const grid = document.getElementById('playersGrid');
+      if (!grid) return;
+      const colors = ['#4a6cf7', '#ef4444', '#22c55e', '#eab308'];
+      const slots  = [];
+      for (let i = 0; i < 4; i++) {
+        const p = players[i];
+        if (!p) {
+          slots.push('<div class="player-card empty" onclick="inviteFriends()"><div style="font-size:28px;color:#4a4a6a;">+</div><div style="font-size:12px;color:#4a4a6a;">Mời bạn bè</div></div>');
+        } else {
+          const name  = p.username || 'Người chơi';
+          const level = p.level || 1;
+          const host  = p.isHost;
+          const ready = p.isReady;
+          const bot   = p.isBot || (p.userId && p.userId.startsWith('BOT_'));
+          slots.push(
+            '<div class="player-card ' + (host ? 'host' : '') + (bot ? ' bot-card' : '') + '">' +
+            (host ? '<div class="host-badge">CHỦ PHÒNG</div>' : '') +
+            '<div style="position:relative;">' +
+            '<div class="avatar avatar-md" style="background:linear-gradient(135deg,' + colors[i] + ',' + colors[i] + '88);">' +
+            (bot ? '🤖' : name.charAt(0)) + '</div>' +
+            '<div class="level-ring">' + (bot ? '🤖' : level) + '</div></div>' +
+            '<div class="player-card-info">' +
+            '<div class="player-card-name">' + name + (bot ? ' <span style="font-size:10px;background:#2a2a40;color:#8b8fa8;padding:1px 5px;border-radius:4px;font-weight:600;">BOT</span>' : '') + '</div>' +
+            '<div class="player-card-level">' + (bot ? 'Người chơi máy' : 'Cấp độ ' + level) + '</div></div>' +
+            '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">' +
+            '<div class="ready-badge ' + (ready ? 'ready' : 'not-ready') + '">' + (ready ? '✓ SẴN SÀNG' : '● CHƯA SẴN SÀNG') + '</div>' +
+            (bot && isHost ? '<button onclick="removeBot(\'' + p.userId + '\')" style="background:none;border:none;color:#4a4a6a;font-size:11px;cursor:pointer;padding:0;" title="Xóa bot">✕ Xóa</button>' : '') +
+            '</div></div>'
+          );
+        }
+      }
+      grid.innerHTML = slots.join('');
+    }
+
+    async function loadRoomChatHistory() {
+      appendRoomMessage({ name: 'HỆ THỐNG', text: 'Chào mừng đến phòng!', system: true });
+      try {
+        const msgs = await API.getRoomMessages(roomId);
+        msgs.forEach(m => appendRoomMessage({ name: m.username || 'Ẩn danh', text: m.content, system: false }));
+      } catch (err) {
+        console.log('[Room] No chat history:', err.message);
+      }
+    }
+
+    function appendRoomMessage(msg) {
+      const container = document.getElementById('roomChatMessages');
+      if (!container) return;
+      const div = document.createElement('div');
+      div.className = 'chat-msg';
+      div.innerHTML = '<div class="name ' + (msg.system ? 'system' : '') + '">' + msg.name + '</div><div class="text">' + msg.text + '</div>';
+      container.appendChild(div);
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function sendRoomMessage() {
+      const input = document.getElementById('roomChatInput');
+      const text  = input.value.trim();
+      if (!text) return;
+      input.value = '';
+      SocketClient.sendRoomMessage(roomId, text);
+    }
+
+    function copyCode() {
+      const code = roomData?.code || roomId;
+      navigator.clipboard.writeText(code).then(() => showToast('Đã sao chép mã phòng!', 'success'));
+    }
+
+    function togglePrivacy() {
+      const toggle = document.getElementById('privacyToggle');
+      toggle.classList.toggle('off');
+      showToast(toggle.classList.contains('off') ? 'Phòng riêng tư' : 'Phòng công khai', 'info');
+    }
+
+    function selectColor(color) {
+      selectedColor = color;
+      const names = { blue: 'Xanh dương', red: 'Đỏ', green: 'Xanh lá', yellow: 'Vàng' };
+      document.getElementById('selectedColorText').textContent = 'Đã chọn: ' + names[color];
+      document.querySelectorAll('.color-dot').forEach(d => d.style.transform = 'scale(1)');
+      event.target.style.transform = 'scale(1.3)';
+    }
+
+    function toggleReady() {
+      // Gửi lên server, chờ ready_changed phản hồi rồi mới cập nhật UI + toast
+      SocketClient.emit('toggle_ready', { roomId, userId: currentUser.id });
+    }
+
+    function addBot() {
+      if (!isHost) return;
+      const playerCount = roomData?.players?.length || 0;
+      if (playerCount >= 4) { showToast('Phòng đã đủ 4 người!', 'error'); return; }
+      SocketClient.emit('add_bot', { roomId, userId: currentUser.id });
+    }
+
+    function removeBot(botUserId) {
+      if (!isHost) return;
+      SocketClient.emit('remove_bot', { roomId, userId: currentUser.id, botUserId });
+    }
+
+    function updateReadyBtn() {
+      const btn = document.getElementById('readyBtn');
+      if (!btn) return;
+      btn.textContent      = isReady ? '✓ Đã sẵn sàng' : '✓ Sẵn sàng';
+      btn.style.background = isReady ? '#16a34a' : '';
+      btn.style.color      = isReady ? '#fff' : '';
+    }
+
+    function inviteFriends() {
+      document.getElementById('inviteModal').classList.add('active');
+      const codeEl = document.getElementById('inviteCodeDisplay');
+      if (codeEl) codeEl.textContent = 'Mã phòng: ' + (roomData?.code || roomId);
+      const list = document.getElementById('inviteFriendsList');
+      list.innerHTML = '<div style="padding:20px;text-align:center;color:#4a4a6a;font-size:13px;">Đang tải...</div>';
+      API.getFriends().then(function(friends) {
+        if (!friends || friends.length === 0) {
+          list.innerHTML = '<div style="padding:24px;text-align:center;color:#4a4a6a;font-size:13px;">Chưa có bạn bè nào.</div>';
+          return;
+        }
+        const statusText = { ONLINE: 'Đang trực tuyến', OFFLINE: 'Ngoại tuyến', INGAME: 'Đang chơi' };
+        list.innerHTML = friends.map(function(f) {
+          const name   = f.displayName || f.username || 'Ẩn danh';
+          const status = f.status || 'OFFLINE';
+          const dotColor = status !== 'OFFLINE' ? '#4ade80' : '#4a4a6a';
+          const avatarBg = status !== 'OFFLINE' ? 'linear-gradient(135deg,#4a6cf7,#a855f7)' : 'linear-gradient(135deg,#2a2a40,#1a1a2e)';
+          return '<div class="invite-friend-item">' +
+            '<div style="width:38px;height:38px;border-radius:50%;background:' + avatarBg + ';display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;flex-shrink:0;">' + name.charAt(0).toUpperCase() + '</div>' +
+            '<div style="flex:1;min-width:0;"><div style="font-size:13px;font-weight:600;">' + name + '</div><div style="font-size:11px;color:' + dotColor + ';">' + (statusText[status] || status) + '</div></div>' +
+            '<button class="invite-btn" onclick="sendInvite(\'' + f.id + '\',\'' + name.replace(/'/g, '') + '\',this)">Mời</button>' +
+            '</div>';
+        }).join('');
+      }).catch(function() {
+        list.innerHTML = '<div style="padding:20px;text-align:center;color:#ff4d6d;font-size:13px;">Không thể tải danh sách bạn bè</div>';
+      });
+    }
+
+    function closeInviteModal() {
+      document.getElementById('inviteModal').classList.remove('active');
+    }
+
+    function sendInvite(friendId, friendName, btn) {
+      SocketClient.sendRoomInvite(friendId, roomId);
+      btn.textContent = 'Đã mời';
+      btn.classList.add('sent');
+      btn.disabled = true;
+      showToast('Đã gửi lời mời đến ' + friendName, 'success');
+    }
+
+    function copyInviteCode() {
+      const code = roomData?.code || roomId;
+      navigator.clipboard.writeText('Tham gia phòng Ludo! Mã: ' + code)
+        .then(function() { showToast('Đã sao chép mã phòng!', 'success'); })
+        .catch(function() { showToast('Mã phòng: ' + code, 'info'); });
+    }
+
+    document.getElementById('inviteModal').addEventListener('click', function(e) {
+      if (e.target === this) closeInviteModal();
+    });
+
+    async function startGame() {
+      if (!isHost) { showToast('Chỉ chủ phòng mới có thể bắt đầu!', 'error'); return; }
+      const playerCount = roomData?.players?.length || 0;
+      if (playerCount < 2) { showToast('Cần ít nhất 2 người chơi để bắt đầu!', 'error'); return; }
+      const startBtn = document.getElementById('startBtn');
+      if (startBtn) { startBtn.disabled = true; startBtn.textContent = 'Đang bắt đầu...'; }
+      try {
+        const game = await API.createGame(roomId);
+        showToast('Game bắt đầu!', 'success');
+        setTimeout(() => window.location.href = '/game/' + game.id, 500);
+      } catch (err) {
+        showToast(err.message || 'Bắt đầu thất bại!', 'error');
+        if (startBtn) { startBtn.disabled = false; startBtn.textContent = '▶ BẮT ĐẦU'; }
+      }
+    }
+
+    function leaveRoom() {
+      SocketClient.leaveRoom(roomId);
+      window.location.href = '/lobby';
+    }
+  </script>
+</body>
+</html>

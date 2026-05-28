@@ -1,0 +1,194 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String  @id @default(uuid())
+  username    String  @unique          // tên đăng nhập — không đổi được
+  displayName String?                  // tên hiển thị — đổi thoải mái
+  password    String
+  avatar      String?
+  level       Int     @default(1)
+  xp          Int     @default(0)
+  coins       Int     @default(1000)
+  rank        String  @default("Bronze")
+
+  lastOnline DateTime @default(now())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  friendOf Friend[] @relation("FriendOf")
+  friends  Friend[] @relation("UserFriends")
+
+  messagesSent Message[] @relation("MessageFrom")
+  messagesRecv Message[] @relation("MessageTo")
+  messagesRoom Message[]
+
+  typingStatuses Typing[]
+
+  requestsSent FriendRequest[] @relation("RequestFrom")
+  requestsRecv FriendRequest[] @relation("RequestTo")
+
+  notifications Notification[]
+  players       Player[]
+  rooms         Room[]         @relation("HostRoom")
+}
+
+model Room {
+  id         String     @id @default(uuid())
+  name       String
+  code       String     @unique
+  hostId     String
+  maxPlayers Int        @default(4)
+  status     RoomStatus @default(WAITING)
+  createdAt  DateTime   @default(now())
+
+  game    Game?
+  players Player[]
+  typing  Typing[]
+
+  messages Message[]
+
+  host User @relation("HostRoom", fields: [hostId], references: [id])
+}
+
+model Game {
+  id     String     @id @default(uuid())
+  roomId String     @unique
+  status GameStatus @default(PLAYING)
+  state  Json // lưu state bàn cờ
+  turn   String? // playerId đang đi
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  room    Room     @relation(fields: [roomId], references: [id])
+  moves   Move[]
+  players Player[]
+}
+
+model Player {
+  id     String  @id @default(uuid())
+  userId String
+  roomId String?
+  gameId String?
+
+  color    String
+  position Json?
+
+  isTurn  Boolean @default(false)
+  isReady Boolean @default(false)
+  score   Int     @default(0)
+
+  user User  @relation(fields: [userId], references: [id])
+  room Room? @relation(fields: [roomId], references: [id])
+  game Game? @relation(fields: [gameId], references: [id])
+
+  moves Move[]
+}
+
+model Move {
+  id       String @id @default(uuid())
+  gameId   String
+  playerId String
+
+  action String // roll, move, attack...
+  data   Json // payload move
+
+  createdAt DateTime @default(now())
+
+  game   Game   @relation(fields: [gameId], references: [id])
+  player Player @relation(fields: [playerId], references: [id])
+}
+
+model Message {
+  id      String @id @default(uuid())
+  content String
+
+  fromId String
+  toId   String? // null = public
+
+  roomId String? // chat trong room
+
+  createdAt DateTime @default(now())
+
+  from   User    @relation("MessageFrom", fields: [fromId], references: [id])
+  to     User?   @relation("MessageTo", fields: [toId], references: [id])
+  room   Room?   @relation(fields: [roomId], references: [id])
+  User   User?   @relation(fields: [userId], references: [id])
+  userId String?
+}
+
+model Typing {
+  id String @id @default(uuid())
+
+  userId String
+  roomId String?
+
+  isTyping Boolean @default(false)
+
+  updatedAt DateTime @updatedAt
+
+  user User  @relation(fields: [userId], references: [id])
+  room Room? @relation(fields: [roomId], references: [id])
+
+  @@unique([userId, roomId]) // 1 user typing / room
+}
+
+model Friend {
+  id        String       @id @default(uuid())
+  userId    String
+  friendId  String
+  status    FriendStatus @default(ONLINE)
+  createdAt DateTime     @default(now())
+
+  friend User @relation("FriendOf", fields: [friendId], references: [id])
+  user   User @relation("UserFriends", fields: [userId], references: [id])
+
+  @@unique([userId, friendId])
+}
+
+model FriendRequest {
+  id        String   @id @default(uuid())
+  fromId    String
+  toId      String
+  createdAt DateTime @default(now())
+
+  from User @relation("RequestFrom", fields: [fromId], references: [id])
+  to   User @relation("RequestTo", fields: [toId], references: [id])
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  type      String
+  content   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+enum RoomStatus {
+  WAITING
+  PLAYING
+  FINISHED
+}
+
+enum GameStatus {
+  WAITING
+  PLAYING
+  FINISHED
+}
+
+enum FriendStatus {
+  ONLINE
+  OFFLINE
+  INGAME
+}

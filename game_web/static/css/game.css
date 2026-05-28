@@ -1,0 +1,210 @@
+/* ===== GAME BOARD STYLES ===== */
+#gameCanvas {
+  border-radius: 16px;
+  box-shadow: 0 0 40px rgba(74, 108, 247, 0.2), 0 20px 60px rgba(0,0,0,0.5);
+}
+
+.piece {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 3px solid rgba(255,255,255,0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  z-index: 10;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.4);
+  user-select: none;
+}
+
+.piece:hover {
+  transform: translate(-50%, -50%) scale(1.3);
+  z-index: 20;
+}
+
+.piece.selectable {
+  animation: glowPulse 1s ease-in-out infinite;
+  cursor: pointer;
+}
+
+.piece.blue { background: radial-gradient(circle at 35% 35%, #6c8fff, #2a4cf7); color: white; }
+.piece.red { background: radial-gradient(circle at 35% 35%, #ff6b6b, #dc2626); color: white; }
+.piece.green { background: radial-gradient(circle at 35% 35%, #4ade80, #16a34a); color: white; }
+.piece.yellow { background: radial-gradient(circle at 35% 35%, #fde047, #ca8a04); color: #1a1a00; }
+
+.piece.moving {
+  animation: pieceJump 0.5s ease;
+  z-index: 30;
+}
+
+.piece.captured {
+  animation: captureEffect 0.6s ease;
+}
+
+/* Special tile effects */
+.tile-effect {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* Dice faces */
+.dice-face {
+  font-size: 32px;
+  transition: all 0.1s;
+}
+
+/* Action log items */
+.log-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  padding: 4px 0;
+}
+
+.log-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Player status cards */
+.player-status-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 12px;
+  margin-bottom: 8px;
+  border: 1px solid #2a2a40;
+  transition: all 0.2s;
+}
+
+.player-status-card.active {
+  border-color: #4a6cf7;
+  background: rgba(74, 108, 247, 0.1);
+}
+
+.player-status-card.finished {
+  border-color: #fbbf24;
+  background: rgba(251, 191, 36, 0.1);
+}
+
+.player-pieces-mini {
+  display: flex;
+  gap: 3px;
+}
+
+.piece-mini {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.3);
+}
+
+.piece-mini.home { opacity: 0.3; }
+.piece-mini.active { opacity: 1; }
+.piece-mini.finished { opacity: 1; box-shadow: 0 0 4px currentColor; }
+
+/* Crater effect */
+.crater {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0,0,0,0.8) 0%, transparent 70%);
+  transform: translate(-50%, -50%);
+  animation: craterEffect 0.8s ease;
+  pointer-events: none;
+}
+
+/* Float text */
+.float-text {
+  position: absolute;
+  font-size: 16px;
+  font-weight: 900;
+  pointer-events: none;
+  animation: floatUp 1.5s ease forwards;
+  z-index: 100;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+  transform: translateX(-50%);
+}
+
+/* Nav items in game sidebar */
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  color: #8b8fa8;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s;
+  cursor: pointer;
+  margin-bottom: 2px;
+}
+
+.nav-item:hover { background: #1a1a2e; color: white; }
+.nav-item.active { background: rgba(74,108,247,0.15); color: #6c8fff; }
+.nav-icon { font-size: 16px; }
+
+/* ===== ANIMATIONS ===== */
+@keyframes floatUp {
+  0%   { opacity: 1; transform: translateX(-50%) translateY(0); }
+  100% { opacity: 0; transform: translateX(-50%) translateY(-40px); }
+}
+
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 6px 2px rgba(255,255,255,0.4); }
+  50%       { box-shadow: 0 0 14px 6px rgba(255,255,255,0.8); }
+}
+
+@keyframes pieceJump {
+  0%   { transform: translate(-50%, -50%) scale(1); }
+  40%  { transform: translate(-50%, -70%) scale(1.2); }
+  100% { transform: translate(-50%, -50%) scale(1); }
+}
+
+@keyframes captureEffect {
+  0%   { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  50%  { transform: translate(-50%, -50%) scale(1.5); opacity: 0.5; }
+  100% { transform: translate(-50%, -50%) scale(0);   opacity: 0; }
+}
+
+@keyframes craterEffect {
+  0%   { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(2); opacity: 0; }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: translate(-50%, -50%) scale(1);   opacity: 0.7; }
+  50%       { transform: translate(-50%, -50%) scale(1.2); opacity: 1;   }
+}
+
+/* Tile legend tooltip */
+.tile-legend {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 11px;
+  color: #8b8fa8;
+  padding: 8px 16px;
+  border-top: 1px solid #2a2a40;
+}
+.tile-legend span { display: flex; align-items: center; gap: 4px; }

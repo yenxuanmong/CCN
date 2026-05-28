@@ -1,0 +1,12 @@
+[build]
+builder = "nixpacks"
+
+[build.buildCommand]
+cmd = "npm install && npx prisma generate"
+
+[deploy]
+startCommand = "node server.js"
+healthcheckPath = "/"
+healthcheckTimeout = 30
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 3

@@ -1,0 +1,172 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ludo Master Elite - Game</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/main.css">
+  <link rel="stylesheet" href="/static/css/game.css">
+</head>
+<body style="overflow:hidden;">
+
+  <!-- Topbar -->
+  <header style="height:56px; background:#13131f; border-bottom:1px solid #2a2a40; display:flex; align-items:center; justify-content:space-between; padding:0 20px; position:fixed; top:0; left:0; right:0; z-index:100;">
+    <div style="font-family:'Orbitron',sans-serif; font-size:14px; font-weight:700; color:#6c8fff;">LUDO MASTER ELITE</div>
+    <div style="display:flex; align-items:center; gap:16px;">
+      <div style="background:#1a1a2e; border:1px solid #2a2a40; border-radius:20px; padding:6px 14px; display:flex; align-items:center; gap:6px; font-size:14px; font-weight:600;">
+        <span style="color:#fbbf24;">🪙</span><span id="topCoins">12,450</span>
+      </div>
+      <button style="background:none; border:none; color:#8b8fa8; font-size:18px; cursor:pointer;">🔔</button>
+      <button style="background:none; border:none; color:#8b8fa8; font-size:18px; cursor:pointer;">⚙️</button>
+    </div>
+  </header>
+
+  <!-- Game Layout -->
+  <div style="display:flex; height:100vh; padding-top:56px;">
+
+    <!-- Left Sidebar -->
+    <aside style="width:180px; background:#13131f; border-right:1px solid #2a2a40; padding:16px 8px; display:flex; flex-direction:column; gap:4px; overflow-y:auto;">
+       <nav class="sidebar-nav">
+
+      <a class="nav-item active" href="/lobby">
+
+        <span class="nav-icon">🎮</span><span>Lobby</span>
+
+      </a>
+
+      <a class="nav-item" href="#" onclick="showFriends()">
+
+        <span class="nav-icon">👥</span><span>Bạn bè</span>
+
+          <a class="nav-item" href="#">
+
+        <span class="nav-icon">🏆</span><span>Xếp hạng</span>
+
+      </a>
+
+      <a class="nav-item" href="/profile">
+
+        <span class="nav-icon">👤</span><span>Hồ sơ</span>
+
+      </a>
+
+      <a class="nav-item" href="#">
+
+        <span class="nav-icon">🛒</span><span>Cửa hàng</span>
+
+      </a>
+
+        <span class="badge badge-red" id="friendBadge" style="margin-left:auto; display:none;">2</span>
+
+      </a>
+      <div style="margin-top:auto; padding-top:16px; border-top:1px solid #2a2a40;">
+        <div id="currentPlayerInfo" style="padding:10px; background:#1a1a2e; border-radius:12px; margin-bottom:8px;">
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+            <div class="avatar avatar-sm" id="gameAvatar">P</div>
+            <div>
+              <div style="font-size:12px; font-weight:700;" id="gameUsername">Người chơi</div>
+              <div style="font-size:10px; color:#8b8fa8;">CẤP ĐỘ 1</div>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+    </aside>
+
+    <!-- Game Board Area -->
+    <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:16px; background:radial-gradient(ellipse at center, #1a1a2e 0%, #0d0d14 100%); position:relative; overflow:hidden;">
+
+      <!-- Board Container -->
+      <div id="boardContainer" style="position:relative;">
+        <canvas id="gameCanvas" width="900" height="900"></canvas>
+        <!-- Pieces overlay -->
+        <div id="piecesLayer" style="position:absolute; top:0; left:0; width:900px; height:900px; pointer-events:none;"></div>
+        <!-- Special tile effects -->
+        <div id="effectsLayer" style="position:absolute; top:0; left:0; width:900px; height:900px; pointer-events:none;"></div>
+      </div>
+      <!-- Chú thích ô đặc biệt -->
+      <div class="tile-legend">
+        <span>⭐ Tăng 1-6 ô</span>
+        <span>💀 Giảm 1-6 ô</span>
+        <span>😵 Choáng 1 lượt</span>
+        <span>🎮 Minigame</span>
+      </div>
+
+      <!-- Bottom Controls -->
+      <div id="gameControls" style="position:fixed; bottom:20px; left:50%; transform:translateX(-50%); display:flex; align-items:center; gap:16px; background:#1a1a2e; border:1px solid #2a2a40; border-radius:20px; padding:12px 20px; box-shadow:0 8px 30px rgba(0,0,0,0.5);">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div class="avatar avatar-sm" id="turnAvatar" style="background:linear-gradient(135deg,#4a6cf7,#a855f7);">P</div>
+          <div>
+            <div style="font-size:10px; color:#8b8fa8; letter-spacing:1px;">LƯỢT CỦA</div>
+            <div style="font-size:14px; font-weight:700;" id="turnPlayerName">Người chơi</div>
+          </div>
+        </div>
+        <div id="diceDisplay" style="width:48px; height:48px; background:#2a2a40; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:28px; cursor:pointer;" onclick="rollDice()">🎲</div>
+        <button id="rollBtn" class="btn btn-primary" onclick="rollDice()" style="padding:12px 24px; font-size:15px; font-weight:700;">
+          TUNG XÚC XẮC 🎲
+        </button>
+      </div>
+    </div>
+
+    <!-- Right Panel -->
+    <aside style="width:280px; background:#13131f; border-left:1px solid #2a2a40; display:flex; flex-direction:column; overflow:hidden;">
+
+      <!-- Action Log -->
+      <div style="padding:16px; border-bottom:1px solid #2a2a40;">
+        <div style="font-size:11px; font-weight:700; letter-spacing:1px; color:#8b8fa8; margin-bottom:10px;">NHẬT KÝ HÀNH ĐỘNG</div>
+        <div id="actionLog" style="display:flex; flex-direction:column; gap:6px; max-height:120px; overflow-y:auto;"></div>
+      </div>
+
+      <!-- Tournament Progress -->
+      <div style="padding:16px; border-bottom:1px solid #2a2a40;">
+        <div style="font-size:11px; font-weight:700; letter-spacing:1px; color:#8b8fa8; margin-bottom:10px;">TIẾN ĐỘ</div>
+        <div style="font-size:13px; color:#8b8fa8; margin-bottom:6px;">Vòng: <span id="lapCount" style="color:white; font-weight:700;">4 / 12</span></div>
+        <div class="progress-bar"><div class="progress-fill" id="lapProgress" style="width:33%;"></div></div>
+      </div>
+
+      <!-- Players Status -->
+      <div style="padding:16px; flex:1; overflow-y:auto;">
+        <div style="font-size:11px; font-weight:700; letter-spacing:1px; color:#8b8fa8; margin-bottom:10px;">NGƯỜI CHƠI</div>
+        <div id="playersStatus"></div>
+      </div>
+
+      <!-- Piece Selection -->
+      <div id="pieceSelection" style="padding:16px; border-top:1px solid #2a2a40; display:none;">
+        <div style="font-size:12px; color:#8b8fa8; margin-bottom:8px;">Chọn quân để di chuyển:</div>
+        <div id="movablePieces" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Mini-game Modal -->
+  <div class="modal-overlay" id="minigameModal">
+    <div class="modal" style="max-width:600px; width:95%;">
+      <div id="minigameContent"></div>
+    </div>
+  </div>
+
+  <!-- Win Modal -->
+  <div class="modal-overlay" id="winModal">
+    <div class="modal" style="text-align:center; max-width:500px;">
+      <div style="font-size:60px; margin-bottom:16px;">🏆</div>
+      <h2 style="font-family:'Orbitron',sans-serif; font-size:28px; color:#fbbf24; margin-bottom:8px;">CHIẾN THẮNG!</h2>
+      <p id="winnerName" style="font-size:20px; font-weight:700; margin-bottom:24px;"></p>
+      <div style="display:flex; gap:12px; justify-content:center;">
+        <button class="btn btn-secondary" onclick="window.location.href='/lobby'">🏠 Về Lobby</button>
+        <button class="btn btn-primary" onclick="restartGame()">🔄 Chơi lại</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <script src="http://localhost:3001/socket.io/socket.io.js"></script>
+  <script src="/static/js/api.js"></script>
+  <script src="/static/js/utils.js"></script>
+  <script src="/static/js/game_engine.js"></script>
+  <script src="/static/js/game_ui.js"></script>
+  <script src="/static/js/minigames.js"></script>
+</body>
+</html>
